@@ -130,7 +130,7 @@ rlayout.setOnClickListener(this);
 
         mySwitch = (Switch) findViewById(R.id.switch1);
 
-        mySwitch.setChecked(true);
+        mySwitch.setChecked(false);
         mySwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
             @Override
@@ -147,10 +147,11 @@ rlayout.setOnClickListener(this);
         });
 
         if(mySwitch.isChecked()){
+            historyb=FALSE;
 
         }
-        else {
-            switchStatus.setText("Switch is currently OFF");
+        else {                   historyb=TRUE;
+
         }
 
 
@@ -221,7 +222,7 @@ check();
                     mDatabase.child(pushKey).removeValue();
                     rideComplete.setVisibility(View.INVISIBLE);
                     if(historyb==TRUE){
-                        Product product = new Product("Cycle cancelled on " +localTime2);
+                        Product product = new Product("request cancelled on " +localTime2);
                         dbHandler.addProduct(product);
                         printData();}
                     else{
@@ -246,6 +247,9 @@ check();
                 newPost.child("uid").setValue(Email);
                 newPost.child("time").setValue(localTime2);
                 pushKey = newPost.getKey();
+                Product product = new Product("request cancelled on " +localTime2);
+                dbHandler.addProduct(product);
+                printData();
             }
       /*  } else {
             logout1();
