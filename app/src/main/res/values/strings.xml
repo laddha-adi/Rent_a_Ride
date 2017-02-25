@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Rent a Cycle</string>
+    <string name="title_activity_login">loginActivity</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_history">historyActivity</string>
+    <string-array name="ride">
+        <item>ride 1</item>
+        <item>ride 2</item>
+        <item>ride 3</item>
+        <item>ride 4</item>
+    </string-array>
+</resources>

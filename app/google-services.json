@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "641417664205",
+    "firebase_url": "https://rent-2c3bf.firebaseio.com",
+    "project_id": "rent-2c3bf",
+    "storage_bucket": "rent-2c3bf.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:641417664205:android:db89d373160bddbc",
+        "android_client_info": {
+          "package_name": "com.example.aditya.rentacycle"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "641417664205-jicavrn993cslostn9q8d2v29joe4l8d.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.aditya.rentacycle",
+            "certificate_hash": "5517E52A66997E92F329C226C5611CF879D6B588"
+          }
+        },
+        {
+          "client_id": "641417664205-nprejlmce2u612u8tmj8611m7r80gvvq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC9sf9niEsEni9MPAAwOVJq2_QFeczjcJY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "641417664205-nprejlmce2u612u8tmj8611m7r80gvvq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
