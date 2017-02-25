@@ -1,12 +1,14 @@
 package com.example.aditya.rentacycle;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -58,7 +60,6 @@ private FirebaseAuth mAuth;
     public Button rideComplete;
     public   MyDbHandler dbHandler;
     public TextView dispText;
-    String[] planets;
     public Button DeleteButton;
     private Context context;
     private TextView switchStatus;
@@ -69,6 +70,8 @@ public static boolean historyb = Boolean.parseBoolean(null);
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
+
+
         requestButton=(Button)findViewById(R.id.request_button);
         rideComplete=(Button)findViewById(R.id.rideComplete);
         rideComplete.setVisibility(View.INVISIBLE);
@@ -127,9 +130,7 @@ rlayout.setOnClickListener(this);
 
         mySwitch = (Switch) findViewById(R.id.switch1);
 
-        //set the switch to ON
         mySwitch.setChecked(true);
-        //attach a listener to check for changes in state
         mySwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
             @Override
@@ -145,7 +146,6 @@ rlayout.setOnClickListener(this);
             }
         });
 
-        //check the current state before we display the screen
         if(mySwitch.isChecked()){
 
         }
@@ -154,8 +154,7 @@ rlayout.setOnClickListener(this);
         }
 
 
-
-    //check();
+printData();
         Email= mAuth.getCurrentUser().getEmail();
     }
 
@@ -163,7 +162,6 @@ rlayout.setOnClickListener(this);
     public void check() {
         String h=Email.substring(8);
         String g="@pilani.bits-pilani.ac.in";
-        //Log.d("ye hai chutiya bug","gg"+Email+"gg");
         if (h.equals(g)){
 
         }
@@ -176,9 +174,9 @@ rlayout.setOnClickListener(this);
     public void onClick(View view) {
 check();
         if(view== DeleteButton){
-            statusText.setText("worked");
 
-
+            AlertDialog diaBox = AskOption();
+            diaBox.show();
         }
             if (view == requestButton) {
                 if (showingFirst == true) {
@@ -341,9 +339,7 @@ public String my="f2016038@pilani.bits-pilani.ac.in";
        if(item.getItemId()==R.id.action_add){
            logout();
        }
-        if(item.getItemId()==R.id.action_history){
-            startActivity(new Intent(this, previousRides.class));
-        }
+
         if(item.getItemId()==R.id.action_about_developer){
             startActivity(new Intent(this, DeveloperActivity.class));
         }
@@ -356,5 +352,40 @@ public String my="f2016038@pilani.bits-pilani.ac.in";
         String dbString = dbHandler.databaseToString();
 dispText.setText(dbString);
     }
+    private AlertDialog AskOption()
+    {
+        AlertDialog myQuittingDialogBox =new AlertDialog.Builder(this)
+                //set message, title, and icon
+                .setTitle("Delete")
+                .setMessage("Sure to delete history ?")
+                .setIcon(R.drawable.delete)
+
+                .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        dbHandler.deleteProduct();
+                        printData();
+                        Toast.makeText(ProfileActivity.this,"History Deleted",Toast.LENGTH_SHORT).show();
+
+                        dialog.dismiss();
+
+                    }
+
+                })
+
+
+
+                .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        dialog.dismiss();
+
+                    }
+                })
+                .create();
+        return myQuittingDialogBox;
+
+    }
+
 
 }
