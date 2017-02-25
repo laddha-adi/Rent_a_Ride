@@ -47,9 +47,9 @@ public class MyDbHandler extends SQLiteOpenHelper {
     }
 
     //Delete a product from the database
-    public void deleteProduct(String productName){
+    public void deleteProduct(){
         SQLiteDatabase db = getWritableDatabase();
-        db.execSQL("DELETE FROM " + TABLE_PRODUCTS + " WHERE " + COLUMN_PRODUCTNAME + "=\"" + productName + "\";");
+        db.execSQL("delete from "+ TABLE_PRODUCTS);
     }
 
     public String databaseToString(){

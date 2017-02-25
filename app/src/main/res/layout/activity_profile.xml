@@ -7,7 +7,8 @@
     android:layout_height="match_parent"
 
     android:background="@drawable/imagecyc"
-    android:id="@+id/activity_profile">
+    android:id="@+id/activity_profile"
+    android:animateLayoutChanges="false">
     tools:context="net.simplifiedcoding.firebaseauthdemo.ProfileActivity">
 
 
@@ -107,9 +108,9 @@
         android:layout_height="match_parent"
         app:menu="@menu/navigation_menu"
         android:layout_gravity="start"
-        android:background="@drawable/gray">
+        android:background="@drawable/gray"
 
-
+        android:animationCache="false">
         <android.support.v4.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -118,26 +119,38 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical" >
-
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Rides History"
+                    android:textSize="18sp"
+                    android:padding="10dp"
+                    android:lineSpacingExtra="8sp"
+                    android:clickable="false" />
                 <TextView
                     android:text="TextView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/dispText"
                     android:textSize="12sp"
-                    android:padding="10dp"/>
+                    android:padding="10dp"
+                    android:lineSpacingExtra="8sp"
+                    android:clickable="false" />
 
                 <LinearLayout
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:padding="7dp">
 
                     <Switch
                         android:text="Pause History"
-                        android:layout_width="40dp"
+                        android:layout_width="30dp"
                         android:layout_height="wrap_content"
                         android:id="@+id/switch1"
                         android:layout_weight="1" />
+
+
 
                     <Button
                         android:text="Delete History"

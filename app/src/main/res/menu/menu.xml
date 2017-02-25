@@ -5,10 +5,7 @@
 android:icon="@mipmap/ic_open_in_new_white_24dp"
 android:title="Logout"
 app:showAsAction="always"/>
-    <item android:id="@+id/action_history"
-        android:icon="@mipmap/ic_history_white_24dp"
-        android:title="Previous Rides"
-        app:showAsAction="never"/>
+
 
     <item android:id="@+id/action_about_initiator"
         android:title="About the Initiatior"

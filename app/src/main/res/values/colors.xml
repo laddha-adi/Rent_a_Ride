@@ -3,4 +3,6 @@
     <color name="colorPrimary">#646464</color>
     <color name="colorPrimaryDark">#110303</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="navdrawer">#7ac5caed</color>
+
 </resources>
