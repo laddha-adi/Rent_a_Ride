@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -28,8 +29,12 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -37,14 +42,17 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
+import static com.example.aditya.rentacycle.MainActivity.isNetworkStatusAvialable;
 import static com.example.aditya.rentacycle.R.array.ride;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 
 public class ProfileActivity extends AppCompatActivity implements View.OnClickListener {
     private Spinner spinner;
-
+public int rideNo;
 private FirebaseAuth mAuth;
+public ProgressBar proBar;
+    private TextView mValueView;
     private FirebaseAuth.AuthStateListener mListener;
     private GoogleApiClient mGoogleApiClient;
     public  DatabaseReference mDatabase;
@@ -62,16 +70,26 @@ private FirebaseAuth mAuth;
     public TextView dispText;
     public Button DeleteButton;
     private Context context;
+    public int cyclesLeft;
     private TextView switchStatus;
+    public String localTime;
     private Switch mySwitch;
-public static boolean historyb = Boolean.parseBoolean(null);
+    public static boolean start = Boolean.parseBoolean(null);
+    DatabaseReference mRootRef= FirebaseDatabase.getInstance().getReference();
+    DatabaseReference mConditionRef = mRootRef.child("Cycles");
+    public static boolean historyb = Boolean.parseBoolean(null);
+    public static boolean iclicked=FALSE;
+    public static boolean doneOnce=FALSE;
+
     //private TimePicker timePicker1;
+    String cycleno;
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        //proBar.setVisibility(VISIBLE);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-
-
+        //proBar = (ProgressBar)findViewById(R.id.progressBar);
+        mValueView=(TextView)findViewById(R.id.textViewCondition);
         requestButton=(Button)findViewById(R.id.request_button);
         rideComplete=(Button)findViewById(R.id.rideComplete);
         rideComplete.setVisibility(View.INVISIBLE);
@@ -114,9 +132,6 @@ mListener=new FirebaseAuth.AuthStateListener(){
         }
     }
 };
-
-
-
         textViewUserEmail = (TextView) findViewById(R.id.textViewUserEmail);
         FirebaseUser user = mAuth.getCurrentUser();
         String personName = user.getDisplayName();
@@ -158,19 +173,21 @@ rlayout.setOnClickListener(this);
 printData();
         Email= mAuth.getCurrentUser().getEmail();
     }
-
+    boolean firstcheck=false ;
     public String id="f2016038@pilani.bits-pilani.ac.in";
     public void check() {
         String h=Email.substring(8);
         String g="@pilani.bits-pilani.ac.in";
         if (h.equals(g)){
-
+firstcheck=true;
         }
         else{
 
       logoute();
     }}
     boolean showingFirst = true;
+
+
     @Override
     public void onClick(View view) {
 check();
@@ -180,36 +197,50 @@ check();
             diaBox.show();
         }
             if (view == requestButton) {
-                if (showingFirst == true) {
-                    Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT+5:30"));
-                    Date currentLocalTime = cal.getTime();
-                    DateFormat date = new SimpleDateFormat("dd/MM/YYYY  hh:mm:ss a");
-                    date.setTimeZone(TimeZone.getTimeZone("GMT+5:30"));
-                    String localTime = date.format(currentLocalTime);
 
-                    statusText.setText("Your cycle is out");
-                    datet.setText("You requested cycle on " + localTime);
-                    DatabaseReference newPost = mDatabase.push();
+                if (isNetworkStatusAvialable(getApplicationContext())) {
 
-                    newPost.child("uid").setValue(Email);
-                    newPost.child("time").setValue(localTime);
-                    pushKey = newPost.getKey();
-                    requestButton.setText("Cancel Your request");
-                    showingFirst = false;
-                    rideComplete.setVisibility(View.INVISIBLE);
+                    if ((showingFirst == true) ) {
+if(cyclesLeft>0) {
+    doneOnce=FALSE;
+    cyclesLeft--;
+    iclicked=TRUE;
+    String cyclesleft = String.valueOf(cyclesLeft);
+    mConditionRef.setValue(cyclesleft);
+    Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT+5:30"));
+    Date currentLocalTime = cal.getTime();
+    DateFormat date = new SimpleDateFormat("dd/MM/YYYY  hh:mm:ss a");
+    date.setTimeZone(TimeZone.getTimeZone("GMT+5:30"));
+    localTime = date.format(currentLocalTime);
 
-                   if(historyb==TRUE){
-                    Product product = new Product("Cycle requested on " +localTime);
-                    dbHandler.addProduct(product);
-                    printData();}
-                    else{
+    statusText.setText("Your cycle is out");
+    datet.setText("You requested cycle on " + localTime);
+    DatabaseReference newPost = mDatabase.push();
 
-                    }
-                    check();
+    newPost.child("uid").setValue(Email);
+    newPost.child("time").setValue(localTime);
+    pushKey = newPost.getKey();
+    requestButton.setText("Cancel Your request");
+    showingFirst = false;
+    rideComplete.setVisibility(View.INVISIBLE);
+    start = TRUE;
+    if (historyb == TRUE) {
+        Product product = new Product("Cycle requested on " + localTime);
+        dbHandler.addProduct(product);
+        printData();
+    } else {
 
-
-
+    }
+} else{
+    Toast.makeText(getApplicationContext(), "No cycles Available", Toast.LENGTH_SHORT).show();
+}
                 } else {
+cyclesLeft++;
+                        iclicked=FALSE;
+
+                        String cycleLeftfinally= String.valueOf(cyclesLeft);
+                        mConditionRef.setValue(cycleLeftfinally);
+                        start=FALSE;
                     Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT+5:30"));
                     Date currentLocalTime = cal.getTime();
                     DateFormat date = new SimpleDateFormat("dd/MM/YYYY  hh:mm:ss a");
@@ -221,17 +252,23 @@ check();
                     showingFirst = true;
                     mDatabase.child(pushKey).removeValue();
                     rideComplete.setVisibility(View.INVISIBLE);
-                    if(historyb==TRUE){
-                        Product product = new Product("request cancelled on " +localTime2);
+                    if (historyb == TRUE) {
+                        Product product = new Product("request cancelled on " + localTime2);
                         dbHandler.addProduct(product);
-                        printData();}
-                    else{
+                        printData();
+                    } else {
 
                     }
                 }
-            }
 
-            if (view == rideComplete) {
+
+
+}
+        else{
+                Toast.makeText(getApplicationContext(), "Please check your Internet Connection", Toast.LENGTH_SHORT).show();
+            }}
+
+          /*  if (view == rideComplete) {
                 Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT+5:30"));
                 Date currentLocalTime = cal.getTime();
                 DateFormat date = new SimpleDateFormat("dd/MM/YYYY  hh:mm:ss a");
@@ -251,10 +288,7 @@ check();
                 dbHandler.addProduct(product);
                 printData();
             }
-      /*  } else {
-            logout1();
-            Toast.makeText(ProfileActivity.this,"Login through your BITS account only",Toast.LENGTH_LONG).show();
-        }*/
+*/
     }
     private void logout1() {FirebaseAuth.getInstance().signOut();
         Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
@@ -281,7 +315,12 @@ check();
         finish();
         startActivity(new Intent(this, MainActivity.class));
     }
-    private void logoute() {FirebaseAuth.getInstance().signOut();
+
+
+
+    private void logoute() {
+
+
         Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
                 new ResultCallback<Status>() {
                     @Override
@@ -298,10 +337,111 @@ public String my="f2016038@pilani.bits-pilani.ac.in";
     protected void onStart() {
         super.onStart();
 
+        mConditionRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String cycleno = dataSnapshot.getValue(String.class);
+                mValueView.setText(cycleno+" cycles available");
+                cyclesLeft = Integer.parseInt(cycleno);
+               // proBar.setVisibility(View.INVISIBLE);
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
+
+
+    mDatabase.addChildEventListener(new ChildEventListener() {
+        @Override
+        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+            // Toast.makeText(context, "hello", Toast.LENGTH_SHORT).show();
+
+
+        }
+
+        @Override
+        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+            //if(iclicked==TRUE){statusText.setText("hello");}
+
+        }
+
+        @Override
+        public void onChildRemoved(DataSnapshot dataSnapshot) {
+            if(iclicked==TRUE){
+            ridecompleted();
+            doneOnce=TRUE;}
+
+        }
+
+        @Override
+        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+
+        }
+    });
+
+
+
+
+           /* mRootRef.child(pushKey).child(time).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String text = dataSnapshot.getValue(String.class);
+                Toast.makeText(context, "hello", Toast.LENGTH_SHORT).show();
+              //  mConditionTextView.setText(text);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+*/
+
+
 
 
         mAuth.addAuthStateListener(mListener);
     }
+
+    private void ridecompleted() {
+
+        cyclesLeft++;
+        String cyclesleft = String.valueOf(cyclesLeft);
+        mConditionRef.setValue(cyclesleft);
+        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT+5:30"));
+        Date currentLocalTime = cal.getTime();
+        DateFormat date = new SimpleDateFormat("dd/MM/YYYY  hh:mm:ss a");
+        date.setTimeZone(TimeZone.getTimeZone("GMT+5:30"));
+        String localTime2 = date.format(currentLocalTime);
+        datet.setText("Last ride completed on " + localTime2);
+        rideComplete.setVisibility(View.INVISIBLE);
+        statusText.setText("No Cycle requested");
+        requestButton.setText("Request a cycle");
+        showingFirst = true;
+        mDatabase.child(pushKey).removeValue();
+        DatabaseReference newPost = completeBase.push();
+        newPost.child("uid").setValue(Email);
+        newPost.child("time Out").setValue(localTime);
+
+        newPost.child("time In").setValue(localTime2);
+
+       // pushKey = newPost.getKey();
+        Product product = new Product("Last ride completed on " +localTime2);
+        dbHandler.addProduct(product);
+        printData();
+
+    }
+
+
     private Boolean exit = false;
     @Override
     public void onBackPressed() {
